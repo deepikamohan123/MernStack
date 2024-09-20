@@ -39,7 +39,7 @@ STEP 3 : Start the backend server:
 
           cd backend
           
-          node Express.js
+          node Server.js
           
         Start the frontend server:
         
