@@ -4,21 +4,21 @@ let bodyParser = require("body-parser")
 let axios = require("axios")
 let cors = require("cors")
 let multer = require("multer")
-let registeredUsers = require("./models/registeredUsers")
-let modelEmployeeRegister = require("./models/modelEmployeeRegister")
+let Users = require("./models/Users")
+let Employees = require("./models/Employees")
 
 let app = express()
 app.use(cors())
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 
-// mongo connection
-mongoose.connect("mongodb://127.0.0.1:27017/loginCredentials")
+
+mongoose.connect("mongodb://127.0.0.1:27017/MernStack")
 mongoose.connection
     .once("open", () => { console.log("Connected to DB....."); })
-    .on("error", () => { console.log("problem to connect to DB ..!!!!!"); })
+    .on("error", () => { console.log("Problem to connect to DB ..!!!!!"); })
 
-//multer storage configuration
+
 let storage = multer.diskStorage({
     destination: function (req, image, cb) {
         return cb(null, "./Images")
@@ -29,31 +29,30 @@ let storage = multer.diskStorage({
 });
 let upload = multer({ storage });
 
-// registration form data handle
+
 app.post("/register", (req, res) => {
-    registeredUsers.findOne({ email: req.body.email })
+    Users.findOne({ email: req.body.email })
         .then((user) => {
             if (user !== null) {
-                res.json("email already registered..")
+                res.json("Email already registered..")
             }
             else {
-                let dataForDB = new registeredUsers(req.body)
+                let dataForDB = new Users(req.body)
                 dataForDB.save()
-                    .then((data) => { res.json("input stored in DB successfully..."); })
-                    .catch((error) => (res.json("data can not be saved , problem at saving time....")))
+                    .then((data) => { res.json("User registered successfully..."); })
+                    .catch((error) => (res.json("Error while saving...")))
             }
         })
         .catch(() => {
-            res.json("registration problem...")
+            res.json("Error while registration..")
         })
 
 
 })
 
 
-//   handling Login Action
 app.post("/login", (req, res) => {
-    registeredUsers.findOne({ email: req.body.email})
+    Users.findOne({ email: req.body.email})
         .then((user) => {
             if (user.cnfPassword == req.body.password) {
                 res.json({ "status": "success", "id": user._id});
@@ -66,26 +65,24 @@ app.post("/login", (req, res) => {
 
 })
 
-// respond data to the Dashbord component
 app.get("/user/:ID", (req, res) => {
     let ID = req.params.ID
-    registeredUsers.findOne({ _id: ID })
+    Users.findOne({ _id: ID })
         .then((e) => { res.json(e.name) })
-        .catch(() => { console.log("problem at param get users Express.."); })
+        .catch(() => { console.log("User not found..."); })
 })
 
 
-// storing create employee form data
 
 app.post("/employees", upload.single("image"), (req, res) => {
     console.log(req.body);
-    modelEmployeeRegister.findOne({ email: req.body.email })
+    Employees.findOne({ email: req.body.email })
         .then((user) => {
             if (user !== null) {
-                res.json("email already registered..")
+                res.json("Email already registered..")
             }
             else {
-                let dataForDB = new modelEmployeeRegister({
+                let dataForDB = new Employees({
                     name: req.body.name,
                     email: req.body.email,
                     phone: req.body.phone,
@@ -95,54 +92,50 @@ app.post("/employees", upload.single("image"), (req, res) => {
                     image: req.file.filename
                 })
                 dataForDB.save()
-                    .then((data) => { res.json("input stored in DB successfully..."); })
-                    .catch((error) => (res.json("data can not be saved , problem at saving time....")))
+                    .then((data) => { res.json("Employee registered successfully..."); })
+                    .catch((error) => (res.json("Error while saving...")))
             }
         })
         .catch(() => {
-            res.json("registration problem...")
+            res.json("Error while registration...")
         })
 })
 
-// respnding employee-list
 
 app.get("/employee-list", (req, res) => {
-    modelEmployeeRegister.find()
+    Employees.find()
         .then((e) => {
             res.send(e)
         })
 })
 
-// edit-employee send data
 app.get("/employee-list/:ID", (req, res) => {
     let ID = req.params.ID
-    modelEmployeeRegister.findOne({ _id: ID })
+    Employees.findOne({ _id: ID })
         .then((e) => {
             res.send(e)
         })
         .catch(() => {
-            res.send("employee not find")
+            res.send("Employee not found")
         })
 })
 
-// edit-employee update values
 app.put("/employee-list/:ID",upload.single('image'), (req, res) => {
     let ID = req.params.ID
-    modelEmployeeRegister.updateOne({ _id: ID }, req.body)
-        .then((e) => { res.send("successfully updated data") })
-        .catch(() => { res.send("error at Delete API"); })
+    Employees.updateOne({ _id: ID }, req.body)
+        .then((e) => { res.send("Data updated successfully..") })
+        .catch(() => { res.send("Error while updating..."); })
 })
 
 
-// delete employee
 app.delete("/employee-list/:ID", (req, res) => {
     let ID = req.params.ID
-    modelEmployeeRegister.deleteOne({ _id: ID }, req.body)
-        .then(() => { res.send("user deleted.."); })
-        .catch(() => { res.send("problem at deletion.."); })
+   Employees.deleteOne({ _id: ID }, req.body)
+        .then(() => { res.send("Employee deleted successfully..."); })
+        .catch(() => { res.send("Error while deleting..."); })
 })
 
 
-app.listen(4001, () => {
-    console.log("server listnign at 4001....");
+app.listen(5000, () => {
+    console.log("server listening at 5000....");
 })

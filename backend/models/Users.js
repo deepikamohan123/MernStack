@@ -6,6 +6,6 @@ let schema1 = new mongoose.Schema({
    
 })
 
-let registeredUsers = mongoose.model("registeredUsers1", schema1)
+let Users = mongoose.model("Users", schema1)
 
-module.exports = registeredUsers;
+module.exports = Users;

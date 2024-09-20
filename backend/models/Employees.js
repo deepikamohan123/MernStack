@@ -12,6 +12,6 @@ let schema1 = new mongoose.Schema({
     },
 })
 
-let modelEmployeeRegister = mongoose.model("modelEmployeeRegister1", schema1)
+let Employees = mongoose.model("Employees", schema1)
 
-module.exports = modelEmployeeRegister;
+module.exports = Employees;
