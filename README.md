@@ -1,3 +1,5 @@
+#Mern Stack
+
 This is a basic full-stack application built using the MERN stack (MongoDB, Express.js, React.js, Node.js). It serves as a foundation for building a modern web application with both frontend and backend functionality.
 
 Features :
